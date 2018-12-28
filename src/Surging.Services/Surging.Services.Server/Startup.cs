@@ -11,9 +11,9 @@ namespace Surging.Services.Server
     public class Startup
     {
         public Startup(IConfigurationBuilder config)
-        { 
-            ConfigureEventBus(config);
-            ConfigureCache(config);
+        {
+          ConfigureEventBus(config);
+          //  ConfigureCache(config);
         }
 
         public IContainer ConfigureServices(ContainerBuilder builder)
@@ -37,7 +37,7 @@ namespace Surging.Services.Server
         /// <param name="services"></param>
         private void ConfigureLogging(IServiceCollection services)
         {
-            services.AddLogging();
+           // services.AddLogging();
         }
 
         private static void ConfigureEventBus(IConfigurationBuilder build)

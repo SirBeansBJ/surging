@@ -5,21 +5,19 @@ using System.Text;
 
 namespace Surging.Core.EventBusRabbitMQ
 {
-   public static class AppConfig
+    public static class AppConfig
     {
         public static IConfigurationRoot Configuration { get; set; }
 
-        public static  string HostName => Configuration != null ? Configuration["EventBusConnection"]:"";
 
-        public static string RabbitUserName => Configuration != null ? Configuration["EventBusUserName"] ?? "guest" : "guest";
+        public static string BrokerName { get; internal set; }
 
-        public static string RabbitPassword =>Configuration != null ? Configuration["EventBusPassword"] ?? "guest" : "guest";
+        public static ushort PrefetchCount { get; set; } 
 
-        public static string VirtualHost => Configuration !=null? Configuration["VirtualHost"] ?? "/": "/";
+        public static int RetryCount { get; internal set; } = 3;
 
-        public static string Port => Configuration != null ? Configuration["Port"] ?? "5672" : "5672";
+        public static int FailCount { get; internal set; } = 3;
 
-        public static string BrokerName => Configuration != null ? Configuration["BrokerName"] ?? "surging": "surging";
-
+        public static int MessageTTL { get; internal set; } = 30 * 1000;
     }
 }

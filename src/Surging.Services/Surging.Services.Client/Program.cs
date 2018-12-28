@@ -6,6 +6,7 @@ using Surging.Core.Codec.MessagePack;
 using Surging.Core.Consul;
 using Surging.Core.Consul.Configurations;
 using Surging.Core.CPlatform;
+using Surging.Core.CPlatform.Configurations;
 using Surging.Core.CPlatform.Utilities;
 using Surging.Core.DotNetty;
 using Surging.Core.EventBusRabbitMQ;
@@ -38,30 +39,22 @@ namespace Surging.Services.Client
                 {
                     builder.AddMicroService(option =>
                     {
-                        option.AddClient();
-                        option.AddClientIntercepted(typeof(CacheProviderInterceptor),typeof(LogProviderInterceptor));
-                        //option.UseZooKeeperManager(new ConfigInfo("127.0.0.1:2181"));
-                        option.UseConsulManager(new ConfigInfo("127.0.0.1:8500"));
-                        option.UseDotNettyTransport();
-                        option.UseRabbitMQTransport();
-                        option.AddCache();
-                        //option.UseKafkaMQTransport(kafkaOption =>
-                        //{
-                        //    kafkaOption.Servers = "127.0.0.1";
-                        //});
-                        //option.UseProtoBufferCodec();
-                        option.UseMessagePackCodec();
+                        option.AddClient()
+                        .AddCache();
                         builder.Register(p => new CPlatformContainer(ServiceLocator.Current));
                     });
+                }) 
+                .ConfigureLogging(logger =>
+                {
+                    logger.AddConfiguration(
+                        Core.CPlatform.AppConfig.GetSection("Logging"));
                 })
-                  .Configure(build =>
+                .Configure(build =>
                 build.AddEventBusFile("eventBusSettings.json", optional: false))
                 .Configure(build =>
                 build.AddCacheFile("cacheSettings.json", optional: false, reloadOnChange: true))
-                .UseNLog(LogLevel.Error)
-               // .UseLog4net(LogLevel.Error)
-                .UseServiceCache()
-                .UseProxy() 
+                .Configure(build =>
+                build.AddCPlatformFile("${surgingpath}|surgingSettings.json", optional: false, reloadOnChange: true))
                 .UseClient()
                 .UseStartup<Startup>()
                 .Build();
@@ -72,9 +65,8 @@ namespace Surging.Services.Client
                 //Startup.TestRabbitMq(ServiceLocator.GetService<IServiceProxyFactory>());
                 // Startup.TestForRoutePath(ServiceLocator.GetService<IServiceProxyProvider>());
                 /// test Parallel
-                //var connectionCount = 250000;
-                //var requestThread = new Thread(() => StartRequest(connectionCount)) { IsBackground = true };
-                //requestThread.Start();
+                //var connectionCount = 200000;
+                //StartRequest(connectionCount);
                 //Console.ReadLine();
             }
         }
